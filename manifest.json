@@ -3,14 +3,13 @@
   "version": "1.0.0",
   "manifest_version": 3,
   "author": "Aaradhya Saxena & Anirudh Dagar",
-  "author_email": "anirudhdagar6@gmail.com",
   "content_scripts": [
     {
-      "matches": ["https://github.com"],
+      "matches": ["https://github.com/*"],
       "js": ["content.js"]
     }
   ],
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_title": "Github Tracker"
   }
