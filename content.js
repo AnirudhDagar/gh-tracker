@@ -7,6 +7,11 @@ async function init(){
     curr_followers  = await fetch_followers(users[i]);
     var curr_followers_data = curr_followers[0]
     var curr_followers_list = curr_followers[1]
+    // TODO: Remove the if statement, only for debugging
+    if (i==1){
+      console.log("removing array");
+      curr_followers_list.splice(3, 1);
+    }
     for(var j=0; j<old_followers_list.length; j++){
       if(!curr_followers_list.includes(old_followers_list[j])){
         bool_unfollowed = true;
@@ -216,7 +221,7 @@ function addNotificationToDOM_v2(user1, user2) {
 
   divc.append(card_spanDOM, card_div1, divbox);
 
-  document.querySelector("#dashboard > div > div:nth-child(3)").prepend(divc);
+  document.querySelector("#dashboard > div > div:nth-child(5)").prepend(divc);
 }
 
 init();
