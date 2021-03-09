@@ -139,7 +139,7 @@ function addNotificationToDOM_v2(dict2, dict1) {
   const card_div3b = document.createElement("a");
 
   card_div3a.class="Link--primary no-underline text-bold wb-break-all d-inline-block";
-  card_div3a.style="color:black; padding-right:3px; font-Weight:Bold";
+  card_div3a.style="color:#24292E; padding-right:3px; font-Weight:600!important";
 
   if(flag==1){
     card_div3a.href=`/${dict1["login"]}`;
@@ -148,7 +148,7 @@ function addNotificationToDOM_v2(dict2, dict1) {
   }
   else{
     card_div3b.class="Link--primary no-underline text-bold wb-break-all d-inline-block";
-    card_div3b.style="color:black; padding-left:3px; font-Weight:Bold";
+    card_div3b.style="color:#24292E; padding-left:3px; font-Weight:600!important";
     card_div3a.href=`/${dict1["login"]}`;
     card_div3a.innerText = ` ${dict1["login"]}`;
     card_div2.innerText = "unfollowed ";
@@ -201,9 +201,9 @@ function addNotificationToDOM_v2(dict2, dict1) {
 
   const div4= document.createElement("div");
   let string = `${dict2["bio"]}` //// add bio;
-  let replacedStr = string.replace(/@(\w+)/g, '<a href="https://github.com/$1">@$1</a>');
-  div4.innerHTML = `${replacedStr}`; 
-  
+  let replacedStr = string.replace(/@(\w+)/g, '<a style="color:#24292E; font-Weight:600!important;" href="https://github.com/$1">@$1</a>');
+  div4.innerHTML = `${replacedStr}`;
+
   const p1=document.createElement("p");
   p1.classList.add("f6", "color-text-secondary", "m-0");
 
