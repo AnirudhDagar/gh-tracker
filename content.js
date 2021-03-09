@@ -1,25 +1,26 @@
 async function init(){
-  var users = JSON.parse(localStorage.getItem("users"));
-  for(var i=0; i<(users.length); i++){
-    var bool_unfollowed = false;
-    var old_followers_data = JSON.parse(localStorage.getItem(users[i]+"_fd"));
-    var old_followers_list = JSON.parse(localStorage.getItem(users[i]+"_fl"));
+  let users = await JSON.parse(localStorage.getItem("users"));
+  for(let i=0; i<(users.length); i++){
+    let bool_unfollowed = false;
+    let old_followers_data = await JSON.parse(localStorage.getItem(users[i]+"_fd"));
+    let old_followers_list = await JSON.parse(localStorage.getItem(users[i]+"_fl"));
     curr_followers  = await fetch_followers(users[i]);
-    var curr_followers_data = curr_followers[0]
-    var curr_followers_list = curr_followers[1]
+    let curr_followers_data = curr_followers[0]
+    let curr_followers_list = curr_followers[1]
     // TODO: Remove the if statement, only for debugging
     if (i==1){
       console.log("removing array");
-      curr_followers_list.splice(3, 1);
+      curr_followers_list.splice(5, 1);
     }
-    for(var j=0; j<old_followers_list.length; j++){
+    for(let j=0; j<old_followers_list.length; j++){
       if(!curr_followers_list.includes(old_followers_list[j])){
         bool_unfollowed = true;
         console.log(`${old_followers_data[j]["login"]} unfollowed ${users[i]}! :(`);
         await unfollowers_list(users[i], old_followers_data[j]["login"]);
-        var user_data = JSON.parse(localStorage.getItem(users[i]));
+        let user_data = await JSON.parse(localStorage.getItem(users[i]));
         console.log(user_data, old_followers_data[j])
-        addNotificationToDOM_v2(old_followers_data[j], user_data);
+        let unfollowed_user = await fetch_user_data(old_followers_data[j]["login"], bool_add=false);
+        addNotificationToDOM_v2(unfollowed_user, user_data);
       }
     }
     if (bool_unfollowed==false){
@@ -42,24 +43,26 @@ async function add_user(user_name){
     console.log("Username already exists!");
   }
   else{
-    var followers = await fetch_followers(user_name);
-    var followers_data = followers[0]
-    var followers_list = followers[1]
+    let followers = await fetch_followers(user_name);
+    let followers_data = followers[0]
+    let followers_list = followers[1]
     localStorage.setItem(user_name+"_fd", JSON.stringify(followers_data));
     localStorage.setItem(user_name+"_fl", JSON.stringify(followers_list));
-    var old_users = JSON.parse(localStorage.getItem("users"));
+    let old_users = JSON.parse(localStorage.getItem("users"));
     old_users.push(user_name)
     localStorage.setItem("users", JSON.stringify(old_users));
   }
 }
 
 
-async function fetch_user_data(user_name){
-  var user_data;
-  var user_url = `https://api.github.com/users/${user_name}`;
+async function fetch_user_data(user_name, bool_add=true){
+  let user_data;
+  let user_url = `https://api.github.com/users/${user_name}`;
   try{
     user_data = await (await fetch(user_url)).json();
+    if (bool_add){
     await localStorage.setItem(user_name, JSON.stringify(user_data));
+    }
     return user_data;
   }
   catch(err){
@@ -70,21 +73,21 @@ async function fetch_user_data(user_name){
 
 
 async function fetch_followers(user_name){
-    var user_data = await fetch_user_data(user_name);
-    var num_followers = JSON.parse(localStorage.getItem(user_name))["followers"];
-    var per_page = 100;
+    let user_data = await fetch_user_data(user_name);
+    let num_followers = JSON.parse(localStorage.getItem(user_name))["followers"];
+    let per_page = 100;
     if(num_followers < 100){
         per_page = num_followers;
     }
-    var num_pages = Math.floor(num_followers / 100) + 1;
-    var followers_list = new Array();
-    var followers_data = new Array();
-    for(var i=1; i<=num_pages; i++){
-        var follower_url = `https://api.github.com/users/${user_name}/followers?page=${i}&per_page=${per_page}`;
+    let num_pages = Math.floor(num_followers / 100) + 1;
+    let followers_list = new Array();
+    let followers_data = new Array();
+    for(let i=1; i<=num_pages; i++){
+        let follower_url = `https://api.github.com/users/${user_name}/followers?page=${i}&per_page=${per_page}`;
         followers_data.push(await (await fetch(follower_url)).json());
     }
-    var followers = followers_data.flat();
-    for(var i=0; i<followers.length; i++){
+    let followers = followers_data.flat();
+    for(let i=0; i<followers.length; i++){
       followers_list.push(followers[i]["login"]);
     }
     return [followers, followers_list];
@@ -97,16 +100,14 @@ async function unfollowers_list(user, unfollowed_by){
     localStorage.setItem(user + "_unfollowers", '[]');
     console.log("Initializing empty users list.")
   }
-  var old_unfollowers = JSON.parse(localStorage.getItem(user + "_unfollowers"));
+  let old_unfollowers = JSON.parse(localStorage.getItem(user + "_unfollowers"));
   old_unfollowers.push(unfollowed_by);
   localStorage.setItem(user + "_unfollowers", JSON.stringify(old_unfollowers));
 }
 
 function addNotificationToDOM_v2(dict2, dict1) {
-
-  // let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > details-menu > div.header-nav-current-user.css-truncate > a > strong").innerText;
-  let current_user = document.querySelector("span.css-truncate.css-truncate-target.ml-1").innerText;
-  // console.log(current_user);
+  let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
+  console.log(current_user);
   let flag = 0;
   if(dict2['login']==current_user){
     flag = 1;
@@ -189,7 +190,8 @@ function addNotificationToDOM_v2(dict2, dict1) {
   const span2a1 = document.createElement("a");
   span2a1.classList.add("f4", "text-bold", "Link--primary", "no-underline");
   span2a1.href = `/${dict2["login"]}`;
-  span2a1.innerText = `${dict2["name"]}`; ///// add name
+  console.log(dict2["name"])
+  span2a1.innerText = `${dict2["login"]}`; ///// add name
   const span2a2 = document.createElement("a");
   span2a2.classList.add("f5", "Link--secondary", "no-underline");
   span2a2.href = `/${dict2["login"]}`;
@@ -239,4 +241,4 @@ function addNotificationToDOM_v2(dict2, dict1) {
   document.querySelector("#dashboard > div > div:nth-child(5)").prepend(divc);
 }
 
-init();
+setTimeout(function(){init();}, 2000);
