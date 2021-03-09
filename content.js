@@ -8,10 +8,10 @@ async function init(){
     let curr_followers_data = curr_followers[0]
     let curr_followers_list = curr_followers[1]
     // TODO: Remove the if statement, only for debugging
-    if (i==1){
-      console.log("removing array");
-      curr_followers_list.splice(5, 1);
-    }
+    // if (i==1){
+    //   console.log("removing array");
+    //   curr_followers_list.splice(4, 1);
+    // }
     for(let j=0; j<old_followers_list.length; j++){
       if(!curr_followers_list.includes(old_followers_list[j])){
         bool_unfollowed = true;
@@ -104,6 +104,7 @@ async function unfollowers_list(user, unfollowed_by){
   old_unfollowers.push(unfollowed_by);
   localStorage.setItem(user + "_unfollowers", JSON.stringify(old_unfollowers));
 }
+
 
 function addNotificationToDOM_v2(dict2, dict1) {
   let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
@@ -202,9 +203,16 @@ function addNotificationToDOM_v2(dict2, dict1) {
   div3.classList.add("dashboard-break-word", "lh-condensed", "mb-2", "mt-1", "bio");
 
   const div4= document.createElement("div");
-  let string = `${dict2["bio"]}` //// add bio;
-  let replacedStr = string.replace(/@(\w+)/g, '<a style="color:#24292E; font-Weight:600!important;" href="https://github.com/$1">@$1</a>');
-  div4.innerHTML = `${replacedStr}`;
+  bio_text = dict2["bio"]
+  if (bio_text){
+    let string = `${bio_text}`; //// add bio
+    let replacedStr = string.replace(/@(\w+)/g, '<a style="color:#24292E; font-Weight:600!important;" href="https://github.com/$1">@$1</a>');
+    div4.innerHTML = `${replacedStr}`;
+  }
+  else{
+    let string = "";
+    div4.innerHTML = `${string}`;
+  }
 
   const p1=document.createElement("p");
   p1.classList.add("f6", "color-text-secondary", "m-0");
