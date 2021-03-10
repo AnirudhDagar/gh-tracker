@@ -169,10 +169,10 @@ function addNotificationToDOM_v2(dict2, dict1) {
   div1a.href = `/${dict2["login"]}`; div1a.title = `${dict2["login"]}`;
 
   const div1ai = document.createElement("img");
-  div1ai.classList.add("avatar", "avatar-user");
+  div1ai.classList.add("avatar", "avatar-user", "mr-2");
   div1ai.src = dict2["avatar_url"];
-  div1ai.width = "32";
-  div1ai.height = "32";
+  div1ai.width = "40";
+  div1ai.height = "40";
 
   const div2 = document.createElement("div");
   div2.classList.add("width-full", "ml-1");
