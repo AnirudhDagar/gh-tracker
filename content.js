@@ -186,8 +186,14 @@ function addNotificationToDOM_v2(dict2, dict1) {
   const span2a1 = document.createElement("a");
   span2a1.classList.add("f4", "text-bold", "Link--primary", "no-underline");
   span2a1.href = `/${dict2["login"]}`;
-  console.log(dict2["name"])
-  span2a1.innerText = `${dict2["login"]}`; ///// add name
+  let name = dict2["name"];
+  if (name){
+    span2a1.innerText = `${name}`; // add name
+  }
+  else{
+    name = dict2["login"];
+    span2a1.innerText = `${name}`; // add login instead of name
+  }
   const span2a2 = document.createElement("a");
   span2a2.classList.add("f5", "Link--secondary", "no-underline");
   span2a2.href = `/${dict2["login"]}`;
@@ -200,13 +206,12 @@ function addNotificationToDOM_v2(dict2, dict1) {
   const div4= document.createElement("div");
   bio_text = dict2["bio"]
   if (bio_text){
-    let string = `${bio_text}`; //// add bio
+    let string = `${bio_text}`;  // add bio
     let replacedStr = string.replace(/@(\w+)/g, '<a style="color:#24292E; font-Weight:600!important;" href="https://github.com/$1">@$1</a>');
     div4.innerHTML = `${replacedStr}`;
   }
   else{
-    let string = "";
-    div4.innerHTML = `${string}`;
+    div4.innerHTML = "";  // add empty string instead of null bio
   }
 
   const p1=document.createElement("p");
@@ -244,4 +249,4 @@ function addNotificationToDOM_v2(dict2, dict1) {
   document.querySelector("#dashboard > div > div:nth-child(5)").prepend(divc);
 }
 
-setTimeout(function(){init();}, 2000);
+setTimeout(function(){init();}, 1500);
