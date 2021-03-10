@@ -1,34 +1,32 @@
 async function init(){
   let users = await JSON.parse(localStorage.getItem("users"));
   for(let i=0; i<(users.length); i++){
-    let bool_unfollowed = false;
-    let old_followers_data = await JSON.parse(localStorage.getItem(users[i]+"_fd"));
-    let old_followers_list = await JSON.parse(localStorage.getItem(users[i]+"_fl"));
-    curr_followers  = await fetch_followers(users[i]);
-    let curr_followers_data = curr_followers[0]
-    let curr_followers_list = curr_followers[1]
+    let bool_unfollowed = false; // flag true if someone unfollowed a tracked users
+    // Get list of old followers and current followers
+    let old_followers = await JSON.parse(localStorage.getItem(users[i]+"_fl"));
+    let curr_followers  = await fetch_followers(users[i]);
     // TODO: Remove the if statement, only for debugging
-    // if (i==1){
-    //   console.log("removing array");
-    //   curr_followers_list.splice(4, 1);
-    // }
-    for(let j=0; j<old_followers_list.length; j++){
-      if(!curr_followers_list.includes(old_followers_list[j])){
+    if (i==1){
+      console.log("removing array");
+      curr_followers.splice(3, 1);
+    }
+    // Compare old followers and new followers
+    for(let j=0; j<old_followers.length; j++){
+      if(!curr_followers.includes(old_followers[j])){
         bool_unfollowed = true;
-        console.log(`${old_followers_data[j]["login"]} unfollowed ${users[i]}! :(`);
-        await unfollowers_list(users[i], old_followers_data[j]["login"]);
+        console.log(`${old_followers[j]} unfollowed ${users[i]}! :(`);
+        // Create a list of all time unfollowers for a user X
+        await unfollowers_list(users[i], old_followers[j]);
         let user_data = await JSON.parse(localStorage.getItem(users[i]));
-        console.log(user_data, old_followers_data[j])
-        let unfollowed_user = await fetch_user_data(old_followers_data[j]["login"], bool_add=false);
-        addNotificationToDOM_v2(unfollowed_user, user_data);
+        let unfollower_user = await fetch_user_data(old_followers[j], bool_add=false);
+        addNotificationToDOM_v2(unfollower_user, user_data);
       }
     }
     if (bool_unfollowed==false){
         console.log(`Nobody unfollowed ${users[i]}! :)`)
       }
     // Update the localstorage
-    localStorage.setItem(users[i]+"_fd", JSON.stringify(curr_followers_data));
-    localStorage.setItem(users[i]+"_fl", JSON.stringify(curr_followers_list));
+    localStorage.setItem(users[i]+"_fl", JSON.stringify(curr_followers));
     }
   }
 
@@ -43,13 +41,10 @@ async function add_user(user_name){
     console.log("Username already exists!");
   }
   else{
-    let followers = await fetch_followers(user_name);
-    let followers_data = followers[0]
-    let followers_list = followers[1]
-    localStorage.setItem(user_name+"_fd", JSON.stringify(followers_data));
+    let followers_list = await fetch_followers(user_name);
     localStorage.setItem(user_name+"_fl", JSON.stringify(followers_list));
     let old_users = JSON.parse(localStorage.getItem("users"));
-    old_users.push(user_name)
+    old_users.push(user_name);
     localStorage.setItem("users", JSON.stringify(old_users));
   }
 }
@@ -61,7 +56,7 @@ async function fetch_user_data(user_name, bool_add=true){
   try{
     user_data = await (await fetch(user_url)).json();
     if (bool_add){
-    await localStorage.setItem(user_name, JSON.stringify(user_data));
+      await localStorage.setItem(user_name, JSON.stringify(user_data));
     }
     return user_data;
   }
@@ -90,7 +85,7 @@ async function fetch_followers(user_name){
     for(let i=0; i<followers.length; i++){
       followers_list.push(followers[i]["login"]);
     }
-    return [followers, followers_list];
+    return followers_list;
 }
 
 
