@@ -5,7 +5,7 @@
   "author": "Aaradhya Saxena & Anirudh Dagar",
   "content_scripts": [
     {
-      "matches": ["https://github.com/*"],
+      "matches": ["https://github.com/"],
       "js": ["content.js"]
     }
   ],
