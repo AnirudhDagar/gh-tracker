@@ -1,14 +1,19 @@
 {
   "name": "Github Tracker",
+  "description": "Track unfollowers on github",
   "version": "1.0.0",
-  "manifest_version": 3,
-  "author": "Aaradhya Saxena & Anirudh Dagar",
+  "manifest_version": 2,
+  "author": "Anirudh Dagar & Aaradhya Saxena",
   "content_scripts": [
     {
       "matches": ["https://github.com/"],
       "js": ["content.js"]
     }
   ],
+  "background": {
+    "page": "background.html",
+    "js": ["background.js"]
+  },
   "action": {
     "default_popup": "popup.html",
     "default_title": "Github Tracker"
