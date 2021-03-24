@@ -12,6 +12,14 @@
   "action": {
     "default_popup": "popup.html",
     "default_title": "Github Tracker"
-  }
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "icons": {
+    "16": "static/16p.png",
+    "48": "static/48p.png",
+    "128": "static/128p.png" }
 }
-
