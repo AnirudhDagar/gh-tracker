@@ -1,35 +1,30 @@
-async function init(){
-  let users = await JSON.parse(localStorage.getItem("users"));
-  for(let i=0; i<(users.length); i++){
-    let bool_unfollowed = false; // flag true if someone unfollowed a tracked users
-    // Get list of old followers and current followers
-    let old_followers = await JSON.parse(localStorage.getItem(users[i]+"_fl"));
-    let curr_followers  = await fetch_followers(users[i]);
-    // TODO: Remove the if statement, only for debugging
-    if (i==1){
-      console.log("removing array");
-      curr_followers.splice(3, 1);
-    }
-    // Compare old followers and new followers
-    for(let j=0; j<old_followers.length; j++){
-      if(!curr_followers.includes(old_followers[j])){
-        bool_unfollowed = true;
-        console.log(`${old_followers[j]} unfollowed ${users[i]}! :(`);
-        // Create a list of all time unfollowers for a user X
-        await unfollowers_list(users[i], old_followers[j]);
-        let user_data = await JSON.parse(localStorage.getItem(users[i]));
-        let unfollower_user = await fetch_user_data(old_followers[j], bool_add=false);
-        addNotificationToDOM_v2(unfollower_user, user_data);
+async function main(){
+  // Message passing API - communicate with extension
+  chrome.runtime.sendMessage({todo: "getData"}, function(response){
+    console.log(response.type);
+    let users = response.users;
+    let unfollowed_pairs = response.compared_unfollowers;
+    console.log(users, unfollowed_pairs);
+    // if (users==null){
+    //     console.log("We are in the special zone!!!")
+    //     let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
+    //     console.log(`Adding ${current_user} to users list`);
+    //     send_message_data(current_user);
+    //     users = [`${current_user}`];
+    // }
+    if (unfollowed_pairs.length == 0){
+        console.log(`Nobody unfollowed ${users}! :)`)
       }
-    }
-    if (bool_unfollowed==false){
-        console.log(`Nobody unfollowed ${users[i]}! :)`)
+    for(let i=0; i<unfollowed_pairs.length; i++){
+      // Send unfollower data to DOM for rendering
+      addNotificationToDOM(unfollowed_pairs[i]["unfollower"],
+                           unfollowed_pairs[i]["user_who_was_unfollowed"]);
       }
   });
 }
 
 
-function addNotificationToDOM_v2(dict2, dict1) {
+function addNotificationToDOM(dict2, dict1) {
   let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
   console.log(current_user);
   let flag = 0;
@@ -169,7 +164,6 @@ function addNotificationToDOM_v2(dict2, dict1) {
   div1a.append(div1ai);
   div1.append(div1a, div2);
   divB.append(div1);
-  //////////////////////
   
   card_div1.append(card_div2, divB);
   divc.append(card_spanDOM, card_div1);
@@ -177,4 +171,4 @@ function addNotificationToDOM_v2(dict2, dict1) {
   document.querySelector("#dashboard > div > div:nth-child(5)").prepend(divc);
 }
 
-setTimeout(function(){init();}, 1500);
+setTimeout(function(){main();}, 2000);
