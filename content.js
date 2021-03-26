@@ -26,7 +26,7 @@ async function main(){
 
 function addNotificationToDOM(dict2, dict1) {
   let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
-  console.log(current_user);
+  console.log("Current User: ", current_user);
   let flag = 0;
   if(dict2['login']==current_user){
     flag = 1;
@@ -52,8 +52,8 @@ function addNotificationToDOM(dict2, dict1) {
 
   const card_div1 = document.createElement("div");
   card_div1.classList.add("d-flex", "flex-column", "width-full");
-  const card_div2 = document.createElement("div");
-  card_div2.classList.add("d-flex", "flex-items-baseline");
+  const baseline_div = document.createElement("div");
+  baseline_div.classList.add("d-flex", "flex-items-baseline");
   const card_div3 = document.createElement("div");
   const card_div3a = document.createElement("a");
   const card_div3b = document.createElement("a");
@@ -64,22 +64,21 @@ function addNotificationToDOM(dict2, dict1) {
   if(flag==1){
     card_div3a.href=`/${dict1["login"]}`;
     card_div3a.innerText = ` ${dict1["login"]}`;
-    card_div2.innerText = "unfollowed you";
+    baseline_div.innerText = "unfollowed you";
   }
   else{
     card_div3b.class="Link--primary no-underline text-bold wb-break-all d-inline-block";
     card_div3b.style="color:#24292E; padding-left:3px; font-Weight:600!important";
     card_div3a.href=`/${dict1["login"]}`;
     card_div3a.innerText = ` ${dict1["login"]}`;
-    card_div2.innerText = "unfollowed ";
+    baseline_div.innerText = "unfollowed ";
     card_div3b.href=`/${dict2["login"]}`;
     card_div3b.innerText = ` ${dict2["login"]}`;
   }
   
   card_div3.append(card_div3a);
-  card_div2.prepend(card_div3);
-  card_div2.append(card_div3b);
-  // card_div1.append(card_div2);
+  baseline_div.prepend(card_div3);
+  baseline_div.append(card_div3b);
 
   //////////////////////////////////////////////
   const divB = document.createElement("div");
@@ -165,7 +164,7 @@ function addNotificationToDOM(dict2, dict1) {
   div1.append(div1a, div2);
   divB.append(div1);
   
-  card_div1.append(card_div2, divB);
+  card_div1.append(baseline_div, divB);
   divc.append(card_spanDOM, card_div1);
 
   document.querySelector("#dashboard > div > div:nth-child(5)").prepend(divc);
