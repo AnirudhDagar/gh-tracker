@@ -1,17 +1,17 @@
 async function main(){
   // Message passing API - communicate with extension
   chrome.runtime.sendMessage({todo: "getData"}, function(response){
-    console.log(response.type);
     let users = response.users;
     let unfollowed_pairs = response.compared_unfollowers;
-    console.log(users, unfollowed_pairs);
-    // if (users==null){
-    //     console.log("We are in the special zone!!!")
-    //     let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
-    //     console.log(`Adding ${current_user} to users list`);
-    //     send_message_data(current_user);
-    //     users = [`${current_user}`];
-    // }
+    console.log("users: ", users, "unfollowed_pairs: ",  unfollowed_pairs);
+    if (users==null){
+        console.log("No users set to tracking list!")
+        let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
+        console.log(`Adding ${current_user} to users tracking list`);
+        chrome.runtime.sendMessage({"current_user_add": "true", "user_name": current_user})
+        users = [`${current_user}`];
+        unfollowed_pairs = [];
+    }
     if (unfollowed_pairs.length == 0){
         console.log(`Nobody unfollowed ${users}! :)`)
       }
