@@ -1,4 +1,4 @@
-import { add_user, fetch_user_data, fetch_followers, unfollowers_list, compare_followers } from './utils.js'
+import { add_user, unfollowers_list, compare_followers } from './utils.js'
 import { read_storage } from './helper.js'
 
 
