@@ -32,8 +32,13 @@ function addNotificationToDOM(dict2, dict1) {
     flag = 1;
   }
 
-  const divc = document.createElement("div");
-  divc.classList.add("follow", "d-flex", "flex-items-baseline", "border-bottom", "color-border-secondary" ,"py-3");
+  const div_follow = document.createElement("div");
+  div_follow.classList.add("follow");
+  const div_body = document.createElement("div");
+  div_body.classList.add("body");
+
+  const div_card = document.createElement("div");
+  div_card.classList.add("d-flex", "flex-items-baseline", "border-bottom", "color-border-secondary" ,"py-3");
 
   const card_spanDOM = document.createElement("span");
   card_spanDOM.classList.add("mr-3", "d-flex");
@@ -82,7 +87,7 @@ function addNotificationToDOM(dict2, dict1) {
 
   //////////////////////////////////////////////
   const divB = document.createElement("div");
-  divB.classList.add("follow", "Box", "p-3", "mt-2");
+  divB.classList.add("Box", "p-3", "mt-2");
 
   const div1 = document.createElement("div");
   div1.classList.add("d-flex");
@@ -155,7 +160,6 @@ function addNotificationToDOM(dict2, dict1) {
 
   p1s1.append(p1s1a); p1s2.append(p1s2a);
   p1.append(p1s1, p1s2);
-
   div3.append(div4);
   span2.append(span2a1, span2a2);
   span1.append(span2);
@@ -163,11 +167,12 @@ function addNotificationToDOM(dict2, dict1) {
   div1a.append(div1ai);
   div1.append(div1a, div2);
   divB.append(div1);
-  
   card_div1.append(baseline_div, divB);
-  divc.append(card_spanDOM, card_div1);
+  div_card.append(card_spanDOM, card_div1);
+  div_body.append(div_card);
+  div_follow.append(div_body);
 
-  document.querySelector("#dashboard > div > div:nth-child(5)").prepend(divc);
+  document.querySelector("#dashboard > div > div:nth-child(5)").prepend(div_follow);
 }
 
 setTimeout(function(){main();}, 2000);
