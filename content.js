@@ -184,4 +184,7 @@ function addNotificationToDOM(dict2, dict1) {
   document.querySelector("#dashboard > .news > div[data-repository-hovercards-enabled]:not([class])").prepend(div_follow);
 }
 
-setTimeout(function(){main();}, 2000);
+window.addEventListener('load', (event) => {
+    console.log('The page has fully loaded');
+    main();
+});
