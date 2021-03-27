@@ -87,6 +87,9 @@ async function unfollowers_list(user, unfollowed_by){
 
 async function compare_followers(debug=false){
   let users = await read_storage("users");
+  if (users==null){
+    return [];
+  }
   let total_unfollowed_pairs = [];
   for(let i=0; i<(users.length); i++){
     let bool_unfollowed = false; // flag true when someone unfollowed a tracked user
