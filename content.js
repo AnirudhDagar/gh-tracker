@@ -172,7 +172,7 @@ function addNotificationToDOM(dict2, dict1) {
   div_body.append(div_card);
   div_follow.append(div_body);
 
-  document.querySelector("#dashboard > div > div:nth-child(5)").prepend(div_follow);
+  document.querySelector("#dashboard > .news > div[data-repository-hovercards-enabled]:not([class])").prepend(div_follow);
 }
 
 setTimeout(function(){main();}, 2000);
