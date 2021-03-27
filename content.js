@@ -24,7 +24,7 @@ async function main(){
 }
 
 
-function addNotificationToDOM(dict2, dict1) {
+function addNotificationToDOM(dict1, dict2) {
   // Set color scheme according to the theme
   let theme = document.getElementsByTagName("html")[0].getAttribute("data-color-mode");
   console.log("Using", theme, "theme");
@@ -36,9 +36,9 @@ function addNotificationToDOM(dict2, dict1) {
   // Get current logged in user
   let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
   console.log("Current User: ", current_user);
-  let flag = 0;
+  let flag = false;
   if(dict2['login']==current_user){
-    flag = 1;
+    flag = true;
   }
 
   const div_follow = document.createElement("div");
@@ -75,7 +75,7 @@ function addNotificationToDOM(dict2, dict1) {
   card_div3a.classList.add("Link--primary", "no-underline", "text-bold", "wb-break-all", "d-inline-block");
   card_div3a.style=`color:${color}; padding-right:3px; font-Weight:600!important`;
 
-  if(flag==1){
+  if(flag){
     card_div3a.href=`/${dict1["login"]}`;
     card_div3a.innerText = ` ${dict1["login"]}`;
     baseline_div.innerText = "unfollowed you";
