@@ -25,6 +25,15 @@ async function main(){
 
 
 function addNotificationToDOM(dict2, dict1) {
+  // Set color scheme according to the theme
+  let theme = document.getElementsByTagName("html")[0].getAttribute("data-color-mode");
+  console.log("Using", theme, "theme");
+  let color = "#24292E"; // color for light theme
+  if (theme=="dark"){
+    color = "#c9d1d9"; // color for dark theme
+  }
+
+  // Get current logged in user
   let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
   console.log("Current User: ", current_user);
   let flag = 0;
@@ -63,8 +72,8 @@ function addNotificationToDOM(dict2, dict1) {
   const card_div3a = document.createElement("a");
   const card_div3b = document.createElement("a");
 
-  card_div3a.class="Link--primary no-underline text-bold wb-break-all d-inline-block";
-  card_div3a.style="color:#24292E; padding-right:3px; font-Weight:600!important";
+  card_div3a.classList.add("Link--primary", "no-underline", "text-bold", "wb-break-all", "d-inline-block");
+  card_div3a.style=`color:${color}; padding-right:3px; font-Weight:600!important`;
 
   if(flag==1){
     card_div3a.href=`/${dict1["login"]}`;
@@ -72,8 +81,8 @@ function addNotificationToDOM(dict2, dict1) {
     baseline_div.innerText = "unfollowed you";
   }
   else{
-    card_div3b.class="Link--primary no-underline text-bold wb-break-all d-inline-block";
-    card_div3b.style="color:#24292E; padding-left:3px; font-Weight:600!important";
+    card_div3b.classList.add("Link--primary", "no-underline", "text-bold", "wb-break-all", "d-inline-block");
+    card_div3b.style=`color:${color}; padding-left:3px; font-Weight:600!important`;
     card_div3a.href=`/${dict1["login"]}`;
     card_div3a.innerText = ` ${dict1["login"]}`;
     baseline_div.innerText = "unfollowed ";
@@ -125,16 +134,16 @@ function addNotificationToDOM(dict2, dict1) {
   span2a2.classList.add("f5", "Link--secondary", "no-underline");
   span2a2.href = `/${dict2["login"]}`;
   span2a2.innerText = `${dict2["login"]}`;
-  span2a2.style="padding-left:6px";
+  span2a2.style = "padding-left:6px";
 
-  const div3= document.createElement("div");
+  const div3 = document.createElement("div");
   div3.classList.add("dashboard-break-word", "lh-condensed", "mb-2", "mt-1", "bio");
 
-  const div4= document.createElement("div");
+  const div4 = document.createElement("div");
   bio_text = dict2["bio"]
   if (bio_text){
     let string = `${bio_text}`;  // add bio
-    let replacedStr = string.replace(/@(\w+)/g, '<a style="color:#24292E; font-Weight:600!important;" href="https://github.com/$1">@$1</a>');
+    let replacedStr = string.replace(/@(\w+)/g, `<a style="color:${color}; font-Weight:600!important;" href="https://github.com/$1">@$1</a>`);
     div4.innerHTML = `${replacedStr}`;
   }
   else{
