@@ -21,7 +21,8 @@
   "permissions": [
     "storage",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "unlimitedStorage"
   ],
   "icons": {
     "16": "static/16p.png",

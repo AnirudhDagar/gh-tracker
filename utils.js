@@ -1,4 +1,4 @@
-import { read_storage } from './helper.js'
+import { read_storage, read_local_storage } from './helper.js'
 
 async function add_user(user_name){
   // Get Users List
@@ -85,11 +85,26 @@ async function unfollowers_list(user, unfollowed_by){
 }
 
 
+async function keep_time_events(unfollowers_data){
+  let old_unfollowers_data = await read_local_storage("unfollowers_info");
+  if (old_unfollowers_data != null){
+    unfollowers_data = unfollowers_data.concat(old_unfollowers_data);
+    chrome.storage.local.set({"unfollowers_info": unfollowers_data});
+  }
+  else{
+    console.log("Initializing unfollowers_info.")
+    chrome.storage.local.set({"unfollowers_info": unfollowers_data});
+  }
+  return unfollowers_data;
+}
+
+
 async function compare_followers(debug=false){
   let users = await read_storage("users");
   if (users==null){
     return [];
   }
+  let new_unfollowed_pairs = [];
   let total_unfollowed_pairs = [];
   for(let i=0; i<(users.length); i++){
     let bool_unfollowed = false; // flag true when someone unfollowed a tracked user
@@ -97,7 +112,7 @@ async function compare_followers(debug=false){
     let old_followers = await read_storage(users[i]+"_fl");
     let curr_followers  = await fetch_followers(users[i]);
     // TODO: Remove the if statement, only for debugging
-    if (i==1 && debug){
+    if (i==0 && debug){
       console.log("removing array");
       curr_followers.splice(3, 1);
       curr_followers.splice(2, 1);
@@ -109,13 +124,17 @@ async function compare_followers(debug=false){
       if(!curr_followers.includes(old_followers[j])){
         bool_unfollowed = true;
         console.log(`${old_followers[j]} unfollowed ${users[i]}! :(`);
+        // We approximate the time when script hits this
+        // line as the time of unfollowing event.
+        let current_time = new Date();
         // Create a list of all time unfollowers for a user X
         await unfollowers_list(users[i], old_followers[j]);
         let user_data = await read_storage(users[i]);
         let unfollower_user_data = await fetch_user_data(old_followers[j], false);
-        total_unfollowed_pairs.push(
+        new_unfollowed_pairs.push(
           {"unfollower": unfollower_user_data,
-          "user_who_was_unfollowed": user_data});
+          "user_who_was_unfollowed": user_data,
+          "event_time": current_time.toString()});
       }
     }
     if (bool_unfollowed==false){
@@ -125,7 +144,12 @@ async function compare_followers(debug=false){
     let user_i_fl = users[i] + "_fl";
     chrome.storage.sync.set({[user_i_fl]: curr_followers});
     }
-  return total_unfollowed_pairs;
+  // Save info
+  if (new_unfollowed_pairs.length > 0){
+    console.log("Some new unfollowers found.")
+  }
+  total_unfollowed_pairs = await keep_time_events(new_unfollowed_pairs);
+  return {"total": total_unfollowed_pairs, "new": new_unfollowed_pairs};
 }
 
 

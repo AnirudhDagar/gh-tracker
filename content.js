@@ -2,29 +2,83 @@ async function main(){
   // Message passing API - communicate with extension
   chrome.runtime.sendMessage({todo: "getData"}, function(response){
     let users = response.users;
-    let unfollowed_pairs = response.compared_unfollowers;
-    console.log("users: ", users, "unfollowed_pairs: ",  unfollowed_pairs);
+    let new_unfollowed_pairs = response.compared_unfollowers;
+    let unfollowers_data = response.unfollowers_info;
+    console.log("users: ", users);
+    console.log("new_unfollowed_pairs", new_unfollowed_pairs);
+    console.log("unfollowers_info", unfollowers_data);
     if (users==null){
         console.log("No users set to tracking list!")
         let current_user = document.querySelector("body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img").alt.replace("@", "");
         console.log(`Adding ${current_user} to users tracking list`);
         chrome.runtime.sendMessage({"current_user_add": "true", "user_name": current_user})
         users = [`${current_user}`];
-        unfollowed_pairs = [];
+        new_unfollowed_pairs = [];
     }
-    if (unfollowed_pairs.length == 0){
+    if (new_unfollowed_pairs.length == 0){
         console.log(`Nobody unfollowed ${users}! :)`)
       }
-    for(let i=0; i<unfollowed_pairs.length; i++){
-      // Send unfollower data to DOM for rendering
-      addNotificationToDOM(unfollowed_pairs[i]["unfollower"],
-                           unfollowed_pairs[i]["user_who_was_unfollowed"]);
+    if (unfollowers_data == null || unfollowers_data.length == 0){
+        console.log(`No unfollowers data to be added to DOM for ${users}!`)
       }
+    else{
+      for(let i=0; i<unfollowers_data.length; i++){
+        // Send unfollower data to DOM for rendering
+        console.log(unfollowers_data[i]["unfollower"]["login"]);
+        // TODO: Remove timeout; added to avoid activity_div==null
+        setTimeout(() => {  console.log("Wait 1s!");
+        addNotificationToDOM(unfollowers_data[i]["unfollower"],
+                             unfollowers_data[i]["user_who_was_unfollowed"],
+                             unfollowers_data[i]["event_time"]);
+        }, 1000);
+      }
+    }
   });
 }
 
 
-function addNotificationToDOM(dict1, dict2) {
+function timeDifference(previous_date) {
+  let current = new Date();
+  let msPerMinute = 60 * 1000;
+  let msPerHour = msPerMinute * 60;
+  let msPerDay = msPerHour * 24;
+  let msPerMonth = msPerDay * 30;
+  let msPerYear = msPerDay * 365;
+
+  let elapsed = current - previous_date;
+
+  if (elapsed < msPerMinute) {
+       return Math.round(elapsed/1000) + ' seconds ago';
+  }
+  else if (elapsed < msPerHour) {
+       return Math.round(elapsed/msPerMinute) + ' minutes ago';
+  }
+  else if (elapsed < msPerDay ) {
+       return Math.round(elapsed/msPerHour ) + ' hours ago';
+  }
+  else if (elapsed < msPerMonth) {
+      return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+  }
+  else if (elapsed < msPerYear) {
+      return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+  }
+  else {
+      return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+  }
+}
+
+
+function addNotificationToDOM(dict1, dict2, unfollow_event_time) {
+  // Get time stamp data
+  let activity_div = document.querySelector("#dashboard > .news > div[data-repository-hovercards-enabled]:not([class])");
+  if (activity_div == null) {
+    console.log("activity_div is null");
+  }
+  let event_lists = activity_div.getElementsByTagName("relative-time");
+
+  // Convert from string to date object
+  unfollow_event_time = new Date(unfollow_event_time);
+
   // Set color scheme according to the theme
   let theme = document.getElementsByTagName("html")[0].getAttribute("data-color-mode");
   console.log("Using", theme, "theme");
@@ -72,6 +126,15 @@ function addNotificationToDOM(dict1, dict2) {
   const card_div3a = document.createElement("a");
   const card_div3b = document.createElement("a");
 
+  const span_date = document.createElement("span")
+  span_date.classList.add("f6", "color-text-tertiary", "no-wrap", "ml-1");
+  const relative_time_tag = document.createElement("relative-time")
+
+  relative_time_tag.setAttribute("datetime", unfollow_event_time)
+  relative_time_tag.classList.add("no-wrap");
+  relative_time_tag.setAttribute("title", unfollow_event_time.toUTCString())
+  relative_time_tag.innerText = timeDifference(unfollow_event_time);
+
   card_div3a.classList.add("Link--primary", "no-underline", "text-bold", "wb-break-all", "d-inline-block");
   card_div3a.style=`color:${color}; padding-right:3px; font-Weight:600!important`;
 
@@ -95,6 +158,8 @@ function addNotificationToDOM(dict1, dict2) {
   if (!flag){
     baseline_div.append(card_div3b);
   }
+  span_date.append(relative_time_tag);
+  baseline_div.append(span_date);
 
   //////////////////////////////////////////////
   const divB = document.createElement("div");
@@ -183,7 +248,24 @@ function addNotificationToDOM(dict1, dict2) {
   div_body.append(div_card);
   div_follow.append(div_body);
 
-  document.querySelector("#dashboard > .news > div[data-repository-hovercards-enabled]:not([class])").prepend(div_follow);
+
+  // Now loop through thus event_lists comparing our current event time to put the card there.
+  let most_recent_event_time = new Date(event_lists[0].getAttribute("datetime"));
+  if (unfollow_event_time > most_recent_event_time){
+    console.log("Insert at the top!");
+    activity_div.prepend(div_follow);
+  }
+  else{
+    for (var i=0; i < event_lists.length - 1; i += 1) {
+      event_time_i = new Date(event_lists[i].getAttribute("datetime"));
+      event_time_i_plus = new Date(event_lists[i+1].getAttribute("datetime"));
+      if (unfollow_event_time <= event_time_i && unfollow_event_time >= event_time_i_plus){
+        activity_div.insertBefore(div_follow, activity_div.children[i+1]);
+        console.log("Insert before:", i+1);
+        break;
+      }
+    }
+  }
 }
 
 window.addEventListener('load', (event) => {
