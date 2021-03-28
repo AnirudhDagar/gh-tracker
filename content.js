@@ -92,7 +92,9 @@ function addNotificationToDOM(dict1, dict2) {
   
   card_div3.append(card_div3a);
   baseline_div.prepend(card_div3);
-  baseline_div.append(card_div3b);
+  if (!flag){
+    baseline_div.append(card_div3b);
+  }
 
   //////////////////////////////////////////////
   const divB = document.createElement("div");
