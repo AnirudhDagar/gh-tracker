@@ -25,17 +25,26 @@ async function main(){
       for(let i=0; i<unfollowers_data.length; i++){
         // Send unfollower data to DOM for rendering
         console.log(unfollowers_data[i]["unfollower"]["login"]);
-        // TODO: Remove timeout; added to avoid activity_div==null
-        setTimeout(() => {  console.log("Wait 1s!");
-        addNotificationToDOM(unfollowers_data[i]["unfollower"],
-                             unfollowers_data[i]["user_who_was_unfollowed"],
-                             unfollowers_data[i]["event_time"]);
-        }, 1000);
+        // Try every 300ms for activity_div to completely load
+        let dom_interval = setInterval(function() {
+          let activity_div = document.querySelector("#dashboard > .news > div[data-repository-hovercards-enabled]:not([class])");
+          if (activity_div != null) {
+            clearInterval(dom_interval);
+            console.log("activity_div is not null");
+            console.log(typeof(activity_div))
+            addNotificationToDOM(unfollowers_data[i]["unfollower"],
+                                unfollowers_data[i]["user_who_was_unfollowed"],
+                                unfollowers_data[i]["event_time"],
+                                activity_div);
+          }
+          else{
+            console.log("activity_div is null; inside the setInterval; trying again in 300ms");
+          }
+        }, 300);
       }
     }
   });
 }
-
 
 /**
  * Injects the unfollowers card to the activity tab on github feed.
@@ -77,13 +86,10 @@ function timeDifference(previous_date) {
  * @param {JSON object} user_dict1
  * @param {JSON object} user_dict2
  * @param {str} unfollow_event_time
+ * @param {object} activity_div
  */
-function addNotificationToDOM(user_dict1, user_dict2, unfollow_event_time) {
+function addNotificationToDOM(user_dict1, user_dict2, unfollow_event_time, activity_div) {
   // Get time stamp data
-  let activity_div = document.querySelector("#dashboard > .news > div[data-repository-hovercards-enabled]:not([class])");
-  if (activity_div == null) {
-    console.log("activity_div is null");
-  }
   let event_lists = activity_div.getElementsByTagName("relative-time");
 
   // Convert from string to date object
