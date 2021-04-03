@@ -31,7 +31,6 @@ async function main(){
           if (activity_div != null) {
             clearInterval(dom_interval);
             console.log("activity_div is not null");
-            console.log(typeof(activity_div))
             addNotificationToDOM(unfollowers_data[i]["unfollower"],
                                 unfollowers_data[i]["user_who_was_unfollowed"],
                                 unfollowers_data[i]["event_time"],
