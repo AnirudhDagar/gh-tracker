@@ -210,7 +210,9 @@ function addNotificationToDOM(dict1, dict2, unfollow_event_time) {
   bio_text = dict2["bio"]
   if (bio_text){
     let string = `${bio_text}`;  // add bio
-    let replacedStr = string.replace(/@(\w+)/g, `<a style="color:${color}; font-Weight:600!important;" href="https://github.com/$1">@$1</a>`);
+    // Replace all text in bio to create @orgs links
+    // $n, where n is integer b/w 1-100, inserts the nth parenthesized submatch string
+    let replacedStr = string.replace(/@([a-zA-Z-]+)/g, `<a style="color:${color}; font-Weight:600!important;" href="https://github.com/$1">@$1</a>`);
     div4.innerHTML = `${replacedStr}`;
   }
   else{
