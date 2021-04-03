@@ -1,5 +1,10 @@
 import { read_storage, read_local_storage } from './helper.js'
 
+
+/**
+ * Adds a user to tracking list.
+ * @param {str} user_name
+ */
 async function add_user(user_name){
   // Get Users List
   let users_list = await read_storage("users");
@@ -25,6 +30,13 @@ async function add_user(user_name){
 }
 
 
+/**
+ * Fetches basic user data from Github API. If bool_add is true,
+ * then also saves the user_name to the tracked users list.
+ * @param  {str} user_name
+ * @param  {Boolean} bool_add
+ * @return {JSON Object} user_data
+ */
 async function fetch_user_data(user_name, bool_add=true){
   let user_url = `https://api.github.com/users/${user_name}`;
   try{
@@ -41,6 +53,11 @@ async function fetch_user_data(user_name, bool_add=true){
 }
 
 
+/**
+ * Get the list of followers for a user_name using Github API.
+ * @param  {str} user_name
+ * @return {JSON Object} followers_list
+ */
 async function fetch_followers(user_name){
     let user_data = await fetch_user_data(user_name);
     console.log(user_data);
@@ -69,6 +86,12 @@ async function fetch_followers(user_name){
 }
 
 
+/**
+ * Each user that is being tracked has an all-time unfollowers list.
+ * This generates and maintains that list for every user.
+ * @param  {str} user
+ * @param  {str} unfollowed_by
+ */
 async function unfollowers_list(user, unfollowed_by){
   // Initialize empty unfollowers list once
   let usr_unfollowers_str = user + "_unfollowers";
@@ -85,6 +108,12 @@ async function unfollowers_list(user, unfollowed_by){
 }
 
 
+/**
+ * Inputs the new_unfollowed_pairs and saves them after 
+ * concatenation with old_unfollowers_data
+ * @param  {JSON Object}
+ * @return {JSON Object} unfollowers_data
+ */
 async function keep_time_events(unfollowers_data){
   let old_unfollowers_data = await read_local_storage("unfollowers_info");
   if (old_unfollowers_data != null){
@@ -99,13 +128,18 @@ async function keep_time_events(unfollowers_data){
 }
 
 
+/**
+ * Fetches current followers using Github API & compares them with the
+ * old followers which are saved with chrome's storage API.
+ * @param  {Boolean}
+ * @return {JSON Object}
+ */
 async function compare_followers(debug=false){
   let users = await read_storage("users");
   if (users==null){
     return [];
   }
   let new_unfollowed_pairs = [];
-  let total_unfollowed_pairs = [];
   for(let i=0; i<(users.length); i++){
     let bool_unfollowed = false; // flag true when someone unfollowed a tracked user
     // Get list of old followers and current followers
@@ -148,7 +182,7 @@ async function compare_followers(debug=false){
   if (new_unfollowed_pairs.length > 0){
     console.log("Some new unfollowers found.")
   }
-  total_unfollowed_pairs = await keep_time_events(new_unfollowed_pairs);
+  let total_unfollowed_pairs = await keep_time_events(new_unfollowed_pairs);
   return {"total": total_unfollowed_pairs, "new": new_unfollowed_pairs};
 }
 
