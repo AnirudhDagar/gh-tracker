@@ -152,6 +152,10 @@ function addNotificationToDOM(user_dict1, user_dict2, unfollow_event_time) {
     card_div3a.href=`/${user_dict1["login"]}`;
     card_div3a.innerText = ` ${user_dict1["login"]}`;
     baseline_div.innerText = "unfollowed you";
+    // If the current user is unfollowed then the information from
+    // user_dict2 is actually the current user's information which is of no use.
+    // Instead we show the bio-info for the unfollower here again.
+    user_dict2 = user_dict1;
   }
   else{
     card_div3b.classList.add("Link--primary", "no-underline", "text-bold", "wb-break-all", "d-inline-block");
