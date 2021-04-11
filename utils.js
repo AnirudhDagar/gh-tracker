@@ -96,14 +96,14 @@ async function unfollowers_list(user, unfollowed_by){
   // Initialize empty unfollowers list once
   let usr_unfollowers_str = user + "_unfollowers";
   let user_unfollowers = await read_storage(usr_unfollowers_str);
-  // console.log(user_unfollowers);
+  console.log("old unfollowers:", user_unfollowers);
   if (user_unfollowers == null){
     user_unfollowers = [];
     chrome.storage.sync.set({[usr_unfollowers_str]: user_unfollowers});
     console.log("Initializing empty users unfollowers list.")
   }
   user_unfollowers.push(unfollowed_by);
-  // console.log(user_unfollowers);
+  console.log(`All time unfollowers for user {user}`, user_unfollowers);
   chrome.storage.sync.set({[usr_unfollowers_str]: user_unfollowers});
 }
 
