@@ -32,5 +32,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse){
 // Run and check for unfollowers every 180000ms/3minutes in the background.
 let check_interval = setInterval(function() {
   console.log("running every 3 minutes")
-  let data = compare_followers()}
+  let data = compare_followers(debug)}
   , 180000);
