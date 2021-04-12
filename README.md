@@ -7,4 +7,4 @@ Track Unfollowers with gh-tracker chrome extension.
 
 Install the extension gh-tracker from chrome web store. Enjouy!
 
-<img src="static/demo_unfollower.gif" width="75%" height="75%" />
+<img src="static/demo_unfollower.gif" width="100%" height="100%" />
