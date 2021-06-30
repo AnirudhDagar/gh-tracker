@@ -46,7 +46,7 @@ async function main(){
 }
 
 /**
- * Injects the unfollowers card to the activity tab on github feed.
+ * Converts a previous date into elapsed time (days/hrs/minutes/seconds ago) format using the current date.
  * @param {DateTime Object} previous_date
  */
 function timeDifference(previous_date) {
